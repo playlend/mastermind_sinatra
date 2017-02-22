@@ -1,6 +1,30 @@
+<section class="center">
+	<h4>how to read suggestion:</h4>
+	<p><img src="/images/black.png" /> means possition and color is correct</p>
+	<p><img src="/images/white.png" /> color is correct</p>
+	<p><img src="/images/none.png" /> there is no such color in the random pattern</p>
+</section>
+
 <%= erb :form %>
-<ol type="1">
-	<% arr.each do |element| %>
-		<li><%= element %></li>
-	<% end %>	
-</ol>
+	<ol type="1" class="center num">
+		Guess
+		<% arr.each do |element| %>
+			<li>
+				<% element.each do |color| %>
+					<img src="/images/<%= "#{color}.png" %>" />
+				<% end %>
+			</li>
+		<% end %>	
+	</ol>
+
+	<ol type="1" class="center num">
+		Suggestion
+		<% suggestion.each do |element2| %>
+			<li>
+				<% element2.each do |color2| %>
+					<img src='/images/<%= "#{color2}.png" %>' />
+				<% end %>
+			</li>
+		<% end %>	
+	</ol>
+

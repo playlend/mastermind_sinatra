@@ -1,13 +1,12 @@
 require 'sinatra'
-require 'sinatra/reloader'
+# require 'sinatra/reloader'
 require 'sass'
 
 class Game
-	attr_accessor :colors, :guess, :pattern
+	attr_accessor :colors, :guess, :pattern, :suggestion_arr
 	def initialize
 		@colors = ["blue", "green", "brown", "purple", "red", "yellow"]
 		@guess = []
-		@suggestion = []
 		create_pattern
 	end
 
@@ -23,7 +22,7 @@ class Game
 	end
 
 	def suggestion
-		@suggestion = []
+		@suggestion_arr = []
 		option1 = "black"
 		option2 = "white"
 		option3 = "none"
@@ -32,30 +31,25 @@ class Game
 			4.times do |num2|
 				if @pattern[num] == @guess[num2]
 					if num == num2
-						@suggestion.push(option1) 
+						@suggestion_arr.push(option1) 
 					else
-						@suggestion.push(option2) 
+						@suggestion_arr.push(option2) 
 					end
 				end	
 			end			
 		end
 
-		while @suggestion.size <=3
-			@suggestion.push(option3)
+		while @suggestion_arr.size <=3
+			@suggestion_arr.push(option3)
 		end
 
-		@suggestion.shuffle!
-		@suggestion
+		@suggestion_arr.shuffle!
+		@suggestion_arr
 	end
 end	
 
-=begin
-game1 = Game.new
-game1.create_pattern
-game1.play
-=end
-
 arr = Array.new
+tips = Array.new
 game = Game.new
 counter = 0
 get '/styles.css' do 
@@ -67,17 +61,34 @@ get '/' do
 end
 
 post '/result' do
-	if params[:submit] == "OK"
-		colors = Array.new
-		colors[0] = params[:first_color]
-		colors[1] = params[:second_color]
-		colors[2] = params[:third_color]
-		colors[3] = params[:fourth_color]
-		arr.push(colors)
-		counter += 1
-		erb :result, :locals => { :arr => arr, :counter => counter}
+	if params[:submit] == "OK" && counter <= 11
+		game.guess = []
+		game.guess.push(params[:first_color])
+		game.guess.push(params[:second_color])
+		game.guess.push(params[:third_color])
+		game.guess.push(params[:fourth_color])
+
+		arr.push(game.guess)
+			
+		game.suggestion
+
+		tips.push(game.suggestion_arr)
+
+		if game.guess != game.pattern 
+			counter += 1
+			erb :result, :locals => { :arr => arr, :counter => counter, :suggestion => tips }
+		else
+			arr = []
+			tips = []
+			counter = 0
+			game = Game.new
+			erb :index
+		end
 	else
 		arr = []
+		tips = []
+		counter = 0
+		game = Game.new
 		erb :index
 	end	
 end
