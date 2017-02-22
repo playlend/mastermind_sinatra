@@ -1,3 +1,7 @@
+require 'sinatra'
+require 'sinatra/reloader'
+require 'sass'
+
 class Game
 	def initialize
 		@colors = ["blue", "green", "brown", "purple", "red", "yellow"]
@@ -132,6 +136,17 @@ class Game
 
 end	
 
+=begin
 game1 = Game.new
 game1.create_pattern
 game1.play
+=end
+
+
+get '/styles.css' do 
+	scss :styles 
+end
+
+get '/' do
+	erb :index
+end
